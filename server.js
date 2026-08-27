@@ -2,14 +2,18 @@ const express = require("express");
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./openapi.json");
-const app = express();
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const app = express();
 
 const PORT = 3000;
 
+// Middleware
 app.use(express.json());
 
+// Swagger documentation
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// In-memory task data
 let tasks = [
   {
     id: 1,
@@ -28,6 +32,7 @@ let tasks = [
   }
 ];
 
+// GET /
 app.get("/", (req, res) => {
   res.json({
     name: "Task API",
@@ -36,16 +41,19 @@ app.get("/", (req, res) => {
   });
 });
 
+// GET /health
 app.get("/health", (req, res) => {
   res.json({
     status: "ok"
   });
 });
 
+// GET /tasks
 app.get("/tasks", (req, res) => {
   res.json(tasks);
 });
 
+// GET /tasks/:id
 app.get("/tasks/:id", (req, res) => {
   const id = Number(req.params.id);
 
@@ -60,6 +68,7 @@ app.get("/tasks/:id", (req, res) => {
   res.json(task);
 });
 
+// POST /tasks
 app.post("/tasks", (req, res) => {
   const { title } = req.body;
 
@@ -68,50 +77,11 @@ app.post("/tasks", (req, res) => {
       error: "Title is required and must be a non-empty string"
     });
   }
-  app.put("/tasks/:id", (req, res) => {
-  const id = Number(req.params.id);
-
-  const task = tasks.find((task) => task.id === id);
-
-  if (!task) {
-    return res.status(404).json({
-      error: `Task ${id} not found`
-    });
-  }
-
-  const { title, done } = req.body;
-
-  if (title === undefined && done === undefined) {
-    return res.status(400).json({
-      error: "Request body must contain title or done"
-    });
-  }
-
-  if (title !== undefined) {
-    if (typeof title !== "string" || title.trim() === "") {
-      return res.status(400).json({
-        error: "Title must be a non-empty string"
-      });
-    }
-
-    task.title = title.trim();
-  }
-
-  if (done !== undefined) {
-    if (typeof done !== "boolean") {
-      return res.status(400).json({
-        error: "Done must be a boolean"
-      });
-    }
-
-    task.done = done;
-  }
-
-  res.json(task);
-});
 
   const newTask = {
-    id: tasks.length > 0 ? Math.max(...tasks.map(task => task.id)) + 1 : 1,
+    id: tasks.length > 0
+      ? Math.max(...tasks.map((task) => task.id)) + 1
+      : 1,
     title: title.trim(),
     done: false
   };
@@ -121,6 +91,7 @@ app.post("/tasks", (req, res) => {
   res.status(201).json(newTask);
 });
 
+// PUT /tasks/:id
 app.put("/tasks/:id", (req, res) => {
   const id = Number(req.params.id);
 
@@ -163,10 +134,7 @@ app.put("/tasks/:id", (req, res) => {
   res.json(task);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
-
+// DELETE /tasks/:id
 app.delete("/tasks/:id", (req, res) => {
   const id = Number(req.params.id);
 
@@ -181,4 +149,9 @@ app.delete("/tasks/:id", (req, res) => {
   tasks.splice(taskIndex, 1);
 
   res.status(204).send();
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
