@@ -68,10 +68,15 @@ app.get("/health", (req, res) => {
 });
 
 // GET /tasks
+// GET /tasks
 app.get("/tasks", (req, res) => {
   const tasks = db
     .prepare("SELECT * FROM tasks")
-    .all();
+    .all()
+    .map((task) => ({
+      ...task,
+      done: Boolean(task.done)
+    }));
 
   res.json(tasks);
 });
