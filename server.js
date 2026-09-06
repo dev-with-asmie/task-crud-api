@@ -111,17 +111,19 @@ app.post("/tasks", (req, res) => {
     });
   }
 
-  const result = db
-    .prepare(
-      "INSERT INTO tasks (title, done) VALUES (?, ?)"
-    )
-    .run(title.trim(), 0);
+  const insertTask = db.prepare(
+  "INSERT INTO tasks (title, done) VALUES (?, ?)"
+);
+
+const result = insertTask.run(title.trim(), 0);
 
   const newTask = db
     .prepare("SELECT * FROM tasks WHERE id = ?")
     .get(result.lastInsertRowid);
 
-  res.status(201).json({
+  res
+  .status(201)
+  .json({
     ...newTask,
     done: Boolean(newTask.done)
   });
