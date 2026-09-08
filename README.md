@@ -19,20 +19,30 @@ A simple RESTful CRUD API built with Node.js, Express.js, and SQLite for managin
 
 - Node.js
 - Express.js
-- Swagger UI Express
-- OpenAPI 3.0
 - SQLite
 - better-sqlite3
+- Swagger UI Express
+- OpenAPI 3.0
 
-## Project Structure
+## Why SQLite?
 
-```text
-task-crud-api/
-├── .gitignore
-├── openapi.json
-├── package.json
-├── package-lock.json
-├── README.md
-├── server.js
-├── swagger-screenshot.png
-└── tasks.db
+SQLite was chosen because it is lightweight, simple to use, and does not require a separate database server. The database is stored in a single file, making it suitable for this small CRUD application.
+
+## Database Location
+
+The SQLite database is stored in the project root as:
+
+`tasks.db`
+
+The database and the `tasks` table are automatically created when the application starts if they do not already exist.
+
+Three example tasks are inserted only when the database table is empty.
+
+## How to Run
+
+Clone the repository and open the project folder.
+
+Install the dependencies:
+
+```bash
+npm install
